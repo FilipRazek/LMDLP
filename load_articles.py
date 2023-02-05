@@ -4,17 +4,18 @@ from bs4 import BeautifulSoup
 import sys
 
 
-def fetch_page(link, cookie_value):
-    cookies = {"lmd_a_m": cookie_value}
+def fetch_page(link, m_cookie_value, s_cookie_value):
+    cookies = {"lmd_a_m": m_cookie_value, "lmd_a_s": s_cookie_value}
     content = requests.get(link, cookies=cookies)
     return content.text
 
 
-def fetch_selected_articles(cookie_value):
-    SELECTED_ARTICLES_URL = "https://www.lemonde.fr/selections/"
+def fetch_selected_articles(m_cookie_value, s_cookie_value):
+    SELECTED_ARTICLES_URL = "https://www.lemonde.fr/selections"
     ARTICLE_LINK_CLASS = "teaser__link"
 
-    page_content = fetch_page(SELECTED_ARTICLES_URL, cookie_value)
+    page_content = fetch_page(SELECTED_ARTICLES_URL,
+                              m_cookie_value, s_cookie_value)
     soup = BeautifulSoup(page_content, 'html.parser')
 
     return [link["href"] for link in soup.find_all(class_=ARTICLE_LINK_CLASS)]
@@ -48,8 +49,8 @@ def get_text_content_from_content(content):
     return str(content.prettify())
 
 
-def download_article(article_url, cookie, out_dir):
-    article_content = fetch_page(article_url, cookie)
+def download_article(article_url, out_dir, m_cookie_value, s_cookie_value):
+    article_content = fetch_page(article_url, m_cookie_value, s_cookie_value)
     file_name = extract_article_name(article_url) + ".html"
     relative_file_path = path.join(out_dir, file_name)
     soup = BeautifulSoup(article_content, 'html.parser')
@@ -64,14 +65,14 @@ def build_html_link(href, text):
     return "<a href={}>{}</a>".format(href, text)
 
 
-def build_directory_from_urls(urls, cookie_value, out_dir, index_file_name):
+def build_directory_from_urls(urls, out_dir, index_file_name, m_cookie_value, s_cookie_value):
     index_file_path = path.join(out_dir, index_file_name)
     with open(index_file_path, "w") as file:
         file.write("<ul>")
     with open(index_file_path, "a") as file:
         for article_url in urls:
             file_name, article_title = download_article(
-                article_url, cookie_value, out_dir)
+                article_url, out_dir, m_cookie_value, s_cookie_value)
             list_item_html = "<li>{}</li>".format(
                 build_html_link(file_name, article_title))
             file.write(list_item_html)
@@ -85,9 +86,13 @@ if len(sys.argv) <= 2:
     raise Exception("Expected output index file name as argument")
 
 if len(sys.argv) <= 3:
-    raise Exception("Expected cookie for lemonde.fr")
+    raise Exception("Expected M cookie for lemonde.fr")
 
-[out_dir, index_file_name, cookie] = sys.argv[1:]
+if len(sys.argv) <= 4:
+    raise Exception("Expected S cookie for lemonde.fr")
 
-urls = fetch_selected_articles(cookie)
-build_directory_from_urls(urls, cookie, out_dir, index_file_name)
+[out_dir, index_file_name, m_cookie, s_cookie] = sys.argv[1:]
+
+urls = fetch_selected_articles(m_cookie, s_cookie)
+print("Loading {} articles".format(len(urls)))
+build_directory_from_urls(urls, out_dir, index_file_name, m_cookie, s_cookie)
