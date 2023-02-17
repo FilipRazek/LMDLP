@@ -5,3 +5,5 @@ for %%i in (out\*) do (
     )
 )
 python pocket_upload.py %CUSTOM_WEBSITE% %ARTICLE_URLS_FILE% %ACCESS_TOKEN% %CONSUMER_KEY%
+
+exit 0

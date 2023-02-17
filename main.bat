@@ -10,4 +10,6 @@ SET CONSUMER_KEY="YOUR_POCKET_CONSUMER_KEY"
 SET SURGE_LOGIN="YOUR_SURGE_LOGIN"
 SET SURGE_TOKEN="YOUR_SURGE_TOKEN"
 
-start download_articles.bat & surge %OUT_DIR% %CUSTOM_WEBSITE% & start upload_to_pocket.bat
+start /w download_articles.bat
+start /w upload_online.bat
+start /w upload_to_pocket.bat
