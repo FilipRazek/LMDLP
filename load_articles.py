@@ -10,15 +10,20 @@ def fetch_page(link, m_cookie_value, s_cookie_value):
     return content.text
 
 
-def fetch_selected_articles(m_cookie_value, s_cookie_value):
-    SELECTED_ARTICLES_URL = "https://www.lemonde.fr/selections"
+def fetch_selected_articles(m_cookie_value, s_cookie_value, page=1):
+    LINKS_ON_PAGE = 20
+    SELECTED_ARTICLES_URL = "https://www.lemonde.fr/selections/?page={}".format(
+        page)
     ARTICLE_LINK_CLASS = "teaser__link"
 
     page_content = fetch_page(SELECTED_ARTICLES_URL,
                               m_cookie_value, s_cookie_value)
     soup = BeautifulSoup(page_content, 'html.parser')
 
-    return [link["href"] for link in soup.find_all(class_=ARTICLE_LINK_CLASS)]
+    links = [link["href"] for link in soup.find_all(class_=ARTICLE_LINK_CLASS)]
+    if len(links) == LINKS_ON_PAGE:
+        return links + fetch_selected_articles(m_cookie_value, s_cookie_value, page + 1)
+    return links
 
 
 def extract_article_name(article_url):
