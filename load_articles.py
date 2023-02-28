@@ -2,6 +2,7 @@ import requests
 from os import path
 from bs4 import BeautifulSoup
 import sys
+import json
 
 
 def fetch_page(link, m_cookie_value, s_cookie_value):
@@ -74,14 +75,17 @@ def build_directory_from_urls(urls, out_dir, index_file_name, m_cookie_value, s_
     index_file_path = path.join(out_dir, index_file_name)
     with open(index_file_path, "w") as file:
         file.write("<ul>")
+    article_names = {}
     with open(index_file_path, "a") as file:
         for article_url in urls:
             file_name, article_title = download_article(
                 article_url, out_dir, m_cookie_value, s_cookie_value)
+            article_names[file_name] = article_title
             list_item_html = "<li>{}</li>".format(
                 build_html_link(file_name, article_title))
             file.write(list_item_html)
         file.write("</ul>")
+    return article_names
 
 
 if len(sys.argv) <= 1:
@@ -96,8 +100,13 @@ if len(sys.argv) <= 3:
 if len(sys.argv) <= 4:
     raise Exception("Expected S cookie for lemonde.fr")
 
-[out_dir, index_file_name, m_cookie, s_cookie] = sys.argv[1:]
+if len(sys.argv) <= 5:
+    raise Exception("Expected article_names file name as argument")
+
+[out_dir, index_file_name, m_cookie, s_cookie, article_names_file] = sys.argv[1:]
 
 urls = fetch_selected_articles(m_cookie, s_cookie)
 print("Loading {} articles".format(len(urls)))
-build_directory_from_urls(urls, out_dir, index_file_name, m_cookie, s_cookie)
+article_names = build_directory_from_urls(
+    urls, out_dir, index_file_name, m_cookie, s_cookie)
+json.dump(article_names, open(article_names_file, "w"))

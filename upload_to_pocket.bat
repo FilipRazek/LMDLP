@@ -4,6 +4,6 @@ for %%i in (out\*) do (
         echo %%~nxi >> %ARTICLE_URLS_FILE%
     )
 )
-python pocket_upload.py %CUSTOM_WEBSITE% %ARTICLE_URLS_FILE% %ACCESS_TOKEN% %CONSUMER_KEY%
+python pocket_upload.py %CUSTOM_WEBSITE% %ARTICLE_URLS_FILE% %ACCESS_TOKEN% %CONSUMER_KEY% %ARTICLE_NAMES_FILE%
 
 exit 0
