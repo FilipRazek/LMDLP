@@ -60,9 +60,11 @@ def download_article(article_url, out_dir, m_cookie_value, s_cookie_value):
     file_name = extract_article_name(article_url) + ".html"
     relative_file_path = path.join(out_dir, file_name)
     soup = BeautifulSoup(article_content, 'html.parser')
-
-    with open(relative_file_path, "w") as file:
-        file.write(get_text_content_from_content(soup.main))
+    if soup.main is None:
+        print("Article {} has no main tag".format(article_url))
+    else:
+        with open(relative_file_path, "w") as file:
+            file.write(get_text_content_from_content(soup.main))
 
     return file_name, soup.title.text
 
