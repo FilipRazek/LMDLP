@@ -35,7 +35,7 @@ def extract_article_name(article_url):
 
 def get_text_content_from_content(content):
     FORBIDDEN_TAGS = {
-        "div": ["dfp-slot", "dfp__slot"],
+        "div": ["dfp-slot", "dfp__slot", "services-list"],
         "section": ["catcher", "catcher--inline", "inread", "article__reactions", "capping"],
         "blockquote": ["article__catchphrase"],
         "footer": ["article__footer-single", "old__article-footer"],
