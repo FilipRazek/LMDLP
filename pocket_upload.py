@@ -24,7 +24,7 @@ def upload_pages_to_pocket(urls, access_token, consumer_key):
                "X-Accept": "application/json"}
     response = requests.post(POCKET_MODIFY_URL, json=data, headers=headers)
     if response.status_code != 200:
-        raise Exception(response)
+        print("error", response)
 
 
 if len(sys.argv) <= 1:
@@ -51,7 +51,7 @@ urls = []
 article_names = json.load(open(article_names_file))
 with open(links_file_name, "r") as f:
     for line in f.readlines():
-        article_url = slugify(line[:-1].strip())
+        article_url = line[:-1].strip()
         if len(article_url) > 1:
             urls.append(("{}/{}".format(custom_website, article_url),
                         article_names[article_url]))
