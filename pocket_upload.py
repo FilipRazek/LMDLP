@@ -1,6 +1,7 @@
 import requests
 import sys
 import json
+from helpers import slugify
 
 
 def build_pocket_add_action(url, title):
@@ -50,7 +51,7 @@ urls = []
 article_names = json.load(open(article_names_file))
 with open(links_file_name, "r") as f:
     for line in f.readlines():
-        article_url = line[:-1].strip()
+        article_url = slugify(line[:-1].strip())
         if len(article_url) > 1:
             urls.append(("{}/{}".format(custom_website, article_url),
                         article_names[article_url]))

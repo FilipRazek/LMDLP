@@ -3,6 +3,7 @@ from os import path
 from bs4 import BeautifulSoup
 import sys
 import json
+from helpers import slugify
 
 
 def fetch_page(link, m_cookie_value, s_cookie_value):
@@ -57,7 +58,7 @@ def get_text_content_from_content(content):
 
 def download_article(article_url, out_dir, m_cookie_value, s_cookie_value):
     article_content = fetch_page(article_url, m_cookie_value, s_cookie_value)
-    file_name = extract_article_name(article_url) + ".html"
+    file_name = slugify(extract_article_name(article_url)) + ".html"
     relative_file_path = path.join(out_dir, file_name)
     soup = BeautifulSoup(article_content, 'html.parser')
     if soup.main is None:
